@@ -1,0 +1,58 @@
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.StringTokenizer;
+public class test{
+	static int[][] matrix;
+	static int[] dx = {1,0,-1,0};
+	static int[] dy = {0,1,0,-1};
+	static int n;
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+		n = Integer.parseInt(br.readLine());
+		matrix = new int[n][n];
+		int min = Integer.MAX_VALUE;
+		int max = 0;
+		for(int i=0;i<n;i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			for(int j=0;j<n;j++) {
+				matrix[i][j]=Integer.parseInt(st.nextToken());
+				if(matrix[i][j]<min) min = matrix[i][j];
+				if(matrix[i][j]>max) max = matrix[i][j];
+			}
+		}
+		int answer = 1;
+		
+		for(int i=min;i<max;i++) {
+			
+			boolean[][] visited = new boolean[n][n];
+			int cnt = 0;
+			for(int j=0;j<n;j++) {
+				for(int k=0;k<n;k++){
+					if(visited[j][k] || matrix[j][k]<=i) continue;
+					dfs(visited,i,j,k);
+					cnt++;
+				}
+			}
+			if(cnt>answer) {
+				answer=cnt;
+			}
+		}
+		System.out.println(answer);
+	}
+	static void dfs(boolean[][]visited,int rain, int x,int y) {
+		//if(visited[x][y] ||matrix[x][y]<=rain) return;
+		visited[x][y]=true;
+		
+		for(int i=0;i<4;i++) {
+			int nx = x+dx[i];
+			int ny = y+dy[i];
+			if(nx<0||nx>=n||ny<0||ny>=n) continue;
+			if(visited[nx][ny] ||matrix[nx][ny]<=rain) continue;
+			
+			visited[nx][ny]=true;
+			dfs(visited, rain, nx,ny);
+		}
+	}
+}

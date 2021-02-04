@@ -1,0 +1,45 @@
+import java.util.LinkedList;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.StringTokenizer;
+public class test{
+	static int[][] matrix;
+	static LinkedList<Integer>[] list;
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+		int vertex = Integer.parseInt(br.readLine());
+		list=new LinkedList[vertex];
+		matrix = new int[vertex][vertex];
+		for(int i=0;i<vertex;i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			list[i] = new LinkedList<>();
+			for(int j=0;j<vertex;j++) {
+				if(Integer.parseInt(st.nextToken())==1)
+				list[i].add(j);
+			}
+		}
+		for(int i=0;i<vertex;i++) {
+			boolean[] visited = new boolean[vertex];
+			for(int adj: list[i]) {
+				dfs(i,visited,adj);     
+			}
+		}
+		for(int i=0;i<vertex;i++) {
+			for(int j=0;j<vertex;j++) {
+				System.out.print(matrix[i][j]+" ");
+			}
+			System.out.println();
+		}
+	}
+	static void dfs(int start, boolean[] visited, int next) {
+		if(visited[next]) return;
+		visited[next]=true;
+		matrix[start][next]=1;    //메인에서 dfs호출후 완료된 visited에 대해 true인 것만 한번에 추가해도 O
+		for(int adj: list[next]) {
+			
+			dfs(start, visited, adj);
+		}
+	}
+}

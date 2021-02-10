@@ -1,0 +1,49 @@
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.Arrays;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+		int n=Integer.parseInt(br.readLine());
+		Task[] arr = new Task[n];
+		int answer=0;
+		int date_max=0;
+		
+		for(int i=0;i<n;i++) {
+			StringTokenizer st=  new StringTokenizer(br.readLine()," ");
+			int d = Integer.parseInt(st.nextToken());
+			int s= Integer.parseInt(st.nextToken());
+			if(d > date_max) date_max=d;
+			arr[i] = new Task(d,s);
+		}
+		boolean[] chk= new boolean[date_max];   //마감일 이내로 가능한지 확인
+		Arrays.sort(arr);               // 점수 큰 순서대로 정렬
+		
+		for(int i=0;i<n;i++) {
+			int start = arr[i].date-1;
+			for(int j=start;j>=0;j--) {
+				if(chk[j]) continue;
+				chk[j]=true;
+				answer+=arr[i].score;
+				break;
+			}
+		}
+		System.out.println(answer);
+		
+	}
+}
+class Task implements Comparable<Task>{
+	int date;
+	int score;
+	Task(int date, int score){
+		this.date=date;
+		this.score=score;
+	}
+	public int compareTo(Task o) {
+		return o.score-this.score;
+	}
+}

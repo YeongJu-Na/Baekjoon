@@ -1,0 +1,35 @@
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class Main{
+	public static void main(String[] args)throws IOException{
+
+		int[] dx = {1,0,-1,0};
+		int[] dy = {0,1,0,-1};
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int t= Integer.parseInt(br.readLine());
+		for(int i=0;i<t;i++) {
+			int n = Integer.parseInt(br.readLine());
+			int[][] arr = new int[2][n];
+			for(int j=0;j<2;j++) {
+				StringTokenizer st = new StringTokenizer(br.readLine()," ");
+				for(int k=0;k<n;k++) {
+					arr[j][k]=Integer.parseInt(st.nextToken());
+				}
+			}
+			int[][] dp=new int[n][3];
+			dp[0][0]=arr[0][0];       //0번 행 선택하는 경우
+			dp[0][1]=arr[1][0];       //1번 행 선택 
+			dp[0][2]=0;               //아무것도 선택하지 않는 경우
+			
+			for(int j=1;j<n;j++) {
+				dp[j][0] = Math.max(dp[j-1][1],dp[j-1][2])+arr[0][j];   //0번 행 선택 시 이전 값들 중 0번째는 x
+				dp[j][1] = Math.max(dp[j-1][0],dp[j-1][2])+arr[1][j];
+				dp[j][2] = Math.max(Math.max(dp[j-1][1], dp[j-1][0]),dp[j-1][2]);
+			}
+			System.out.println(Math.max(Math.max(dp[n-1][0], dp[n-1][1]), dp[n-1][2]));
+		}
+	}
+}

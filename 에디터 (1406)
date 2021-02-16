@@ -1,0 +1,48 @@
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.Stack;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		Stack<Character> left = new Stack<>();      //커서 기준 왼쪽에 있는 문자들
+		Stack<Character> right = new Stack<>();   //커서 기준 오른쪽
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String str = br.readLine();
+		for(char c: str.toCharArray()) left.push(c);
+		int n = Integer.parseInt(br.readLine());
+		
+		for(int i=0;i<n;i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			String cmd = st.nextToken();
+			
+			if(cmd.equals("P")) {
+				left.push(st.nextToken().charAt(0));
+			}
+
+			else if(cmd.equals("L")) {
+				if(left.isEmpty())continue;
+				right.push(left.pop());
+			}
+			else if(cmd.equals("D")) {
+				if(right.isEmpty())continue;
+				left.push(right.pop());
+			}
+			else {	                       	// "B"
+				if(left.isEmpty()) continue;
+				left.pop();
+			}
+		}
+		while(!left.isEmpty()) {
+			right.push(left.pop());
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		while(!right.isEmpty()) {
+			sb.append(right.pop());
+		}
+		System.out.println(sb.toString());
+	}
+}

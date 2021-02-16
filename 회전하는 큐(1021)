@@ -1,0 +1,92 @@
+////////////////////////////////풀이 1 - 두 방향 모두 직접 해본 후 결과 
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		long bef = System.nanoTime();
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int n = Integer.parseInt(st.nextToken());	//원소 수(큐의 크기)
+		int m = Integer.parseInt(st.nextToken());	//뽑을 수 개수
+		int answer = 0;	//연산 수
+    
+    Deque<Integer> dq =new LinkedList<>();      //오른쪽으로 이동하기 위해 polllast, addfirst있는 depque사용
+				for(int i=1;i<=n;i++) dq.add(i);
+		Queue<Integer> temp = new LinkedList<>();   //좌측으로 이동은 기본 큐 사용
+		temp.addAll(dq);      //값 복사  
+    st = new StringTokenizer(br.readLine()," ");
+	  for(int i=0;i<m;i++) {
+				int idx = Integer.parseInt(st.nextToken());
+				int l = 0;
+        //temp에 값 복사를 매번 for문 내에서 할 수도 o(복사할 수(num)많아질수록? 또는 뽑을 개수(for문 도는 횟수)적을 떈
+        //해당 풀이가 좋지만 예제 케이스 중에는 매번 복사가 더 빠르기도 함
+				while(temp.peek()!=idx) {
+					l++;
+					temp.add(temp.poll());
+				}
+        temp.poll();
+				int r = 0;
+				while(dq.peek()!=idx) {
+					r++;
+					dq.addFirst((dq.pollLast()));
+				}
+				dq.poll();
+				answer += Math.min(r, l);
+			}
+			System.out.println(answer);
+	  long aft = System.nanoTime();
+		System.out.println((aft-bef)/1000);
+	}
+}
+/////////////////////////////////  풀이 2 - half인덱스와 뽑을 숫자의 위치 비교로 한 방향 정한 후 한번만 실행
+
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		long bef = System.nanoTime();
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int n = Integer.parseInt(st.nextToken());	//원소 수(큐의 크기)
+		int m = Integer.parseInt(st.nextToken());	//뽑을 수 개수
+		int answer = 0;	//연산 수
+		LinkedList<Integer> cq = new LinkedList<>();
+		for(int i=1;i<=n;i++) cq.add(i);
+		
+		st = new StringTokenizer(br.readLine()," ");
+		for(int i=0;i<m;i++) {
+			int num = Integer.parseInt(st.nextToken()); 	//뽑을 수
+			int half = cq.size()/2;
+			int idx = 0;
+			for(int j=0;j<cq.size();j++) {
+				if(cq.get(j)==num) idx=j;
+			}
+			if(idx<=half) {	//왼쪽으로 이동
+				while(cq.peek()!=num) {
+					cq.add(cq.pollFirst());
+					answer++;
+				}
+			}
+			else {
+				while(cq.peek()!=num) {
+					cq.addFirst(cq.pollLast());
+					answer++;
+				}
+			}
+			cq.poll();
+		}
+		System.out.println(answer);
+		long aft = System.nanoTime();
+		System.out.println((aft-bef)/1000);
+	}
+}

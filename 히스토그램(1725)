@@ -1,0 +1,34 @@
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.Stack;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int n = Integer.parseInt(br.readLine());
+		int[] arr = new int[n];
+		long ans = 0;
+		Stack<Integer> st = new Stack<>();
+		
+		for(int i=0;i<n;i++) {
+			arr[i]=Integer.parseInt(br.readLine());
+		}
+		for(int i=0;i<n;i++) {
+			long h =arr[i];
+			while(!st.isEmpty()&&arr[st.peek()]>h) {  //저장된 높이들로 가능한 최대넓이
+				int idx = st.pop();	//3
+				int w =(st.isEmpty())?i: i-st.peek()-1; 
+				ans = Math.max(ans,(long)arr[idx]*w);
+			}
+			st.push(i); //해당 위치에 대한 내용은 저장 후 다음에 검사
+		}
+		while(!st.isEmpty()) {  //남은 값들
+			int idx = st.pop();
+			int w =(st.isEmpty())?n: n-st.peek()-1;
+			ans = Math.max(ans,(long)arr[idx]*w);
+		}
+		System.out.println(ans);
+	}
+}

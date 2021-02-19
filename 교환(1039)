@@ -1,0 +1,50 @@
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int n = Integer.parseInt(st.nextToken());
+		int k = Integer.parseInt(st.nextToken());
+		Queue<String> q = new LinkedList<>();
+		q.add(Integer.toString(n));
+		
+		while(!q.isEmpty()&&k-->0) {
+			int qsize = q.size();
+			boolean[] visited=new boolean[1000001];   //횟수 마다 새로운 visited배열
+			for(int qq=0;qq<qsize;qq++) {           //각 횟수까지만 q돌기
+				String num = q.poll();
+				
+				for(int j=0;j<num.length()-1;j++) {
+					for(int i=j+1;i<num.length();i++) {
+						char c1 = num.charAt(i);
+						char c2 = num.charAt(j);
+            
+						if((j==0&&c1=='0')) continue;           //0으로 시작 x
+						StringBuilder sb = new StringBuilder();
+						sb.append(num);
+						sb.setCharAt(i, c2);
+						sb.setCharAt(j, c1);
+						int x = Integer.parseInt(sb.toString());
+
+						if(visited[x])continue;
+						visited[x]=true;
+						q.add(sb.toString());
+					}
+				}
+			}
+		}
+		int answer = -1;
+		while(!q.isEmpty()) {
+			int x = Integer.parseInt(q.poll());
+			if(x>answer) answer = x;
+		}
+		System.out.println(answer);
+	}
+}

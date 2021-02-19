@@ -1,0 +1,90 @@
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		int[] dx = {1,0,-1,0};
+		int[] dy = {0,1,0,-1};
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int t = Integer.parseInt(br.readLine());
+		
+		while(t-->0) {
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			int col= Integer.parseInt(st.nextToken());
+			int row= Integer.parseInt(st.nextToken());
+			Queue<Node> move = new LinkedList<>();
+			Queue<Node> fire = new LinkedList<>();
+			int[][] map = new int[row][col];
+			
+			for(int i=0;i<row;i++) {
+				String s= br.readLine();
+				int j=0;
+				for(char c: s.toCharArray()) {	//0:빈방, 벽:-1,불:-2,방문한곳:1
+					if(c=='#') map[i][j]=-1;
+					else if(c=='*') {
+						map[i][j]=-2;
+						fire.add(new Node(i,j));
+					}
+					else if(c=='@') {
+						map[i][j]=1;
+						move.add(new Node(i,j));
+					}
+					j++;
+				}
+			}
+			int sec = 1;
+			boolean flag=false;
+			
+			loop: while(!move.isEmpty()) {
+				int sizem = move.size();
+				
+				for(int i=0;i<sizem;i++) {	//1초간 상근이 이동할 수 있는 위치 찾기
+					Node cur = move.poll();
+					if(map[cur.x][cur.y]==-2) continue;	  //이동가능햇으나 동시에 불붙은 경우
+					if(cur.x==0||cur.x==row-1||cur.y==0||cur.y==col-1){
+						//탈출
+						flag=true;
+						break loop;
+					}
+					for(int j=0;j<4;j++) {
+						int nx = cur.x+dx[j];
+						int ny = cur.y+dy[j];
+						if(nx<0||nx>=row||ny<0||ny>=col) continue;
+						if(map[nx][ny]!=0) continue;	//불, 벽, 방문한 곳이면 지나가기
+						map[nx][ny]=1;
+						move.add(new Node(nx,ny));
+					}
+				}
+				int sizef = fire.size();
+				for(int i=0;i<sizef;i++) {  //같은 시간 불이 옮겨붙는 위치
+					Node cur = fire.poll();
+					
+					for(int j=0;j<4;j++) {
+						int nx = cur.x+dx[j];
+						int ny = cur.y+dy[j];
+						if(nx<0||nx>=row||ny<0||ny>=col) continue;
+						if(map[nx][ny]<0) continue;		//벽이거나 불인 경우 패스, 즉 이동가능했던 경로도 불붙을수o
+						
+						map[nx][ny]=-2;
+						fire.add(new Node(nx,ny));
+					}
+				}
+				sec++;
+			}
+			if(flag) System.out.println(sec);
+			else System.out.println("IMPOSSIBLE");
+		}
+	}
+}
+class Node{
+	int x;
+	int y;
+	Node(int x, int y){
+		this.x=x;
+		this.y=y;
+	}
+}

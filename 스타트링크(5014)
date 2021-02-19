@@ -1,0 +1,44 @@
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+public class test{
+	public static void main(String[] args)throws IOException{
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int f = Integer.parseInt(st.nextToken());	//총 층수
+		int s = Integer.parseInt(st.nextToken());	//시작 층
+		int g = Integer.parseInt(st.nextToken());	//목적 층
+		int u = Integer.parseInt(st.nextToken());	//위로 갈 수 있는 칸수
+		int d = Integer.parseInt(st.nextToken());	//아래 칸 수
+
+		int[] arr= new int[f+1];
+		if(s==g) {                //출발지==목적지
+			System.out.println(0);
+			System.exit(0);
+		}
+		Queue<Integer> q = new LinkedList<>();
+		q.add(s);
+		while(!q.isEmpty()) {
+			int cur = q.poll();
+		
+			int temp = cur+u;
+			if(temp<=f && arr[temp]==0 && temp!=s) {  //갈수있는 위치이고, 탐색한위치가 아닐 때
+				arr[temp]=arr[cur]+1;
+				if(temp==g) break;
+				q.add(temp);
+			}
+			temp = cur-d;
+			if(temp>0 && arr[temp]==0 && temp!=s) {
+				arr[temp]=arr[cur]+1;
+				if(temp==g) break;
+				q.add(temp);
+			}
+		}
+		System.out.println((arr[g]==0)?"use the stairs":arr[g]);
+	}
+}

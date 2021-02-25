@@ -1,0 +1,108 @@
+////////////////////  처음 풀이 - 주어진 preorder, inorder로 Node[] nodes에 노드간 연결정보 찾기 --> postorder실행
+package baekjoon;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static int[] pre;
+	static int[] in;
+	static Node[] nodes;
+	static int idx,n;
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int t = Integer.parseInt(br.readLine());
+		
+		while(t-->0) {
+			n = Integer.parseInt(br.readLine());
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			pre= new int[n];
+			for(int i=0;i<n;i++) pre[i]=Integer.parseInt(st.nextToken());
+			
+			st = new StringTokenizer(br.readLine()," ");
+			in= new int[n];
+			for(int i=0;i<n;i++) in[i]=Integer.parseInt(st.nextToken());
+			
+			nodes = new Node[n+1];
+			for(int i=1;i<n+1;i++) nodes[i]= new Node(i);
+			idx=0;
+			
+			connect(0,in.length);
+			post(nodes[pre[0]]);
+			System.out.println();
+			
+		}
+	}
+	static void post(Node n) {            //postOrder실행
+		if(n.left!=0) post(nodes[n.left]);
+		if(n.right!=0) post(nodes[n.right]);
+		System.out.print(n.data+" ");
+		
+	}
+	static void connect(int s, int e) {   //노드간 연결 정보 저장
+		int root=pre[idx];
+		int mid = 0;
+		for(int i=s;i<e;i++) {
+			if(in[i]==root) {
+				mid=i;
+				break;
+			}
+		}
+		if(mid>s) {
+			nodes[root].left=pre[++idx];
+			connect(s,mid);
+		}
+		
+		if(mid<e-1) {
+			nodes[root].right=pre[++idx];
+			connect(mid+1,e);
+		}
+	}
+}
+class Node{
+	int data;
+	int left;
+	int right;
+	Node(int data){
+		this.data=data;
+	}
+}
+////////////////////////다른 풀이- 바로 출력 -preorder
+package baekjoon;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static int[] pre;
+	static int[] in;
+	static int n;
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int t = Integer.parseInt(br.readLine());
+		
+		while(t-->0) {
+			n = Integer.parseInt(br.readLine());
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			pre= new int[n];
+			for(int i=0;i<n;i++) pre[i]=Integer.parseInt(st.nextToken());
+			
+			st = new StringTokenizer(br.readLine()," ");
+			in= new int[n];
+			for(int i=0;i<n;i++) in[i]=Integer.parseInt(st.nextToken());
+			postOrder(0,n,0);
+			System.out.println();
+		}
+	}
+	static void postOrder(int s, int e, int r) {
+		for(int i=s;i<e;i++) {
+			if(in[i]==pre[r]) {
+				postOrder(s,i,r+1);		//해당 root(pre[r)기준 left
+				postOrder(i+1,e,r+i-s+1);		//해당 root기준 right
+				System.out.print(pre[r]+" ");
+			}
+		}
+	}
+}

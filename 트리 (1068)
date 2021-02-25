@@ -1,0 +1,42 @@
+package baekjoon;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int n = Integer.parseInt(br.readLine());
+		int[] p=new int[n];
+		StringTokenizer st= new StringTokenizer(br.readLine()," ");
+		for(int i=0;i<n;i++) {
+			p[i]=Integer.parseInt(st.nextToken());
+		}
+		int remove=Integer.parseInt(br.readLine());
+		Queue<Integer> q = new LinkedList<>();
+		q.add(remove);
+		p[remove]=-2;
+		
+		while(!q.isEmpty()) {		//제거할 노드를 부모로 하는 모든 노드 제거
+			int cur=q.poll();
+			for(int i=0;i<n;i++) {
+				if(p[i]==cur) {
+					p[i]=-2;
+					q.add(i);
+				}
+			}
+		}
+		int answer =n;
+		HashSet<Integer> hs = new HashSet<>();
+		for(int i=0;i<n;i++) {
+			if(p[i]==-2) answer--;
+			else if(p[i]!=-1) hs.add(p[i]);
+		}
+		//answer=제거노드 외 남은 노드 수, hs에는 남은 노드 중 자식있는 노드
+		System.out.println(answer-hs.size());
+	}
+}

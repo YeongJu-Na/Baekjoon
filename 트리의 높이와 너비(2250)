@@ -1,0 +1,67 @@
+package baekjoon;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static Node[] arr;
+	static int col=1;
+	static int[][] colval;
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int n = Integer.parseInt(br.readLine());
+		arr = new Node[n+1];
+		for(int i=1;i<n+1;i++) {
+			arr[i]=new Node(i);
+		}
+		for(int i=1;i<n+1;i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			int p = Integer.parseInt(st.nextToken());
+			int l = Integer.parseInt(st.nextToken());
+			int r = Integer.parseInt(st.nextToken());
+			arr[p].left=l;
+			if(l!=-1) arr[l].parent=p;
+			arr[p].right=r;
+			if(r!=-1) arr[r].parent=p;
+		}
+		int root=0;
+		for(int i=1;i<n+1;i++) {      //부모번호가 -1인 루트 노드 찾기
+			if(arr[i].parent==0) {
+				root=i;
+				break;
+			}
+		}
+		colval=new int[n+1][2];
+		int[] answer = new int[2];
+		//arr[root].level=1;        //각 노드의 level따로 저장 없이 inorder로 순회하며 열(col)값만 저장
+		inOrder(arr[root],1);   //열값 구하기-> left < root< right
+		
+		for(int i=1;i<n+1;i++) {
+			int x=colval[i][1]-colval[i][0]+1;
+			if(answer[1]<x) {
+				answer[0]=i;
+				answer[1]=x;
+			}
+		}
+		System.out.println(answer[0]+" "+answer[1]);
+		
+	}
+	static void inOrder(Node start, int level) {
+		if(start.left!=-1) inOrder(arr[start.left],level+1);    //자식 노드 호출마다 level+1
+		if(colval[level][0]==0) colval[level][0]=col;
+		if(colval[level][1]<col) colval[level][1]=col;
+		col++;
+		if(start.right!=-1) inOrder(arr[start.right],level+1);
+	}
+}
+class Node{
+	int data;
+	int left;
+	int right;
+	int parent;
+	//int level;
+	Node(int data){
+		this.data=data;
+	}
+}

@@ -1,0 +1,67 @@
+package baekjoon;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static int n;
+	static ArrayList<Edge>[] edges;
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		 n = Integer.parseInt(br.readLine());
+		 edges = new ArrayList[n+1];
+		 for(int i=1;i<n+1;i++) {
+			 edges[i]=new ArrayList<>();      //각 노드간 간선 정보, 
+		 }
+		 for(int i=1;i<n;i++) {
+			 StringTokenizer st = new StringTokenizer(br.readLine()," ");
+			 int a = Integer.parseInt(st.nextToken());
+			 int b = Integer.parseInt(st.nextToken());
+			 int c = Integer.parseInt(st.nextToken());
+			 edges[a].add(new Edge(b,c));
+			 edges[b].add(new Edge(a,c));
+		 }
+		 if(n==1) System.out.println(0);    //간선 없는 경우
+		 else {
+			 int u = bfs(1).node;         //1말고도 임의의 노드에서 가장 먼 노드 찾기(u)
+			 int answer = bfs(u).cost;    //찾은 노드(u)에서 가장 먼 노드(v)까지의 경로가 트리의 지름
+			 System.out.println(answer); 
+		 }
+	}
+	static Edge bfs(int start) {	      //가장 먼 노드번호와 거리 반환
+		boolean[] visited =new boolean[n+1];
+		Queue<Integer> q=new LinkedList<>();
+		int[] dist = new int[n+1];
+		int fardist=0;
+		int farnode=0;
+		q.add(start);
+		visited[start]=true;
+		while(!q.isEmpty()) {
+			int cur = q.poll();
+			for(Edge e: edges[cur]) {
+				if(visited[e.node]) continue;
+				dist[e.node]=dist[cur]+e.cost;
+				if(dist[e.node]>fardist) {
+					farnode=e.node;
+					fardist=dist[e.node];
+				}
+				visited[e.node]=true;
+				q.add(e.node);
+			}
+		}
+		return new Edge(farnode, fardist);
+		
+	}
+}
+class Edge{
+	int node;
+	int cost;
+	Edge(int node, int cost){
+		this.node=node;
+		this.cost=cost;
+	}
+}

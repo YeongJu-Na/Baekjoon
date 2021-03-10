@@ -1,0 +1,62 @@
+import java.util.Arrays;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static int[] parent;
+	static boolean[] chk;
+	public static void main(String[] args) throws IOException{
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int n= Integer.parseInt(st.nextToken());	//술병 개수
+		int l= Integer.parseInt(st.nextToken());	//서랍 개수
+		
+		parent = new int[l+1];        //루트 노드는 대체 가능한 서랍들 중 비어있는 곳
+		chk = new boolean[l+1];       //서랍이 채워졌는지 여부 
+		Arrays.fill(parent, -1);
+		
+		for(int i=0;i<n;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int a=Integer.parseInt(st.nextToken());
+			int b=Integer.parseInt(st.nextToken());
+			boolean flag=false;                   //서랍에 넣을 수 있다면 false
+			if(!chk[a]) {             //a서랍에 넣을 수 있다면
+				chk[a]=true;
+				union(a,b);       //a의 루트는 b가 됨
+			}
+			else if(!chk[b]) {
+				chk[b]=true;
+				union(b,a);
+			}
+			else {              //shift후 옮기기
+				int temp1 = find(a);
+				int temp2 = find(b);
+				if(!chk[temp1]) {
+					chk[temp1]=true;
+					union(temp1,b);
+				}
+				else if(!chk[temp2]) {
+					chk[temp2]=true;
+					union(temp2,b);
+				}
+				else flag=true;
+			}
+			System.out.println((flag)?"SMECE":"LADICA");
+		}
+	
+	}
+	static int find(int x) {
+		if(parent[x]<0) return x;
+		return parent[x]=find(parent[x]);
+	}
+	static void union(int x, int y) {	      // y를 루트노드로
+		x=find(x);
+		y=find(y);
+		if(x==y) return;
+		parent[y]+=parent[x];
+		parent[x]=y;
+	}
+}

@@ -1,0 +1,76 @@
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+	static int[] parent;
+	public static void main(String[] args) throws IOException{
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine()," ");
+		int p= Integer.parseInt(st.nextToken());	        //노드 수
+		int w= Integer.parseInt(st.nextToken());	          //간선 수
+		
+		st=new StringTokenizer(br.readLine()," ");
+		int c= Integer.parseInt(st.nextToken());	  	  //baekjoon world수도
+		int v= Integer.parseInt(st.nextToken());	    	//cube 수도
+		Edge[] edges= new Edge[w];
+		parent = new int[p];
+		Arrays.fill(parent, -1);
+		
+		for(int i=0;i<w;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			int w1= Integer.parseInt(st.nextToken());
+			int w2= Integer.parseInt(st.nextToken());
+			int width= Integer.parseInt(st.nextToken());
+			
+			edges[i]=new Edge(w1,w2,width);
+		}
+		Arrays.sort(edges,new Comparator<Edge>() {
+			public int compare(Edge o1, Edge o2) {
+				return o2.width-o1.width;			        //너비가 큰 것 부터 내림차순
+			}
+		});
+		int answer = -1;
+		for(int i=0;i<w;i++) {
+			Edge cur= edges[i];
+			union(cur.w1,cur.w2);
+			if(find(c)==find(v)) {        //두 나라간 경로 완성 시 
+				answer = cur.width;
+				break;
+			}
+		}
+		System.out.println(answer);
+		
+	}
+	static int find(int x) {
+		if(parent[x]<0) return x;
+		return parent[x]=find(parent[x]);
+	}
+	static void union(int x, int y) {
+		x=find(x);
+		y=find(y);
+		if(x==y) return;
+		if(parent[x]<parent[y]) {
+			parent[x]+=parent[y];
+			parent[y]=x;
+		}
+		else {
+			parent[y]+=parent[x];
+			parent[x]=y;
+		}
+	}
+}
+class Edge{
+	int w1;
+	int w2;
+	int width;
+	Edge(int w1, int w2, int width){
+		this.w1=w1;
+		this.w2=w2;
+		this.width=width;
+	}
+}

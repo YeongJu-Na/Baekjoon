@@ -1,0 +1,30 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class Main {
+
+	public static void main(String[] args) throws IOException{
+		BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+		char[] arr = br.readLine().toCharArray();
+		int[] ans = new int[26];        //모든 문자의 cnt담을 배열
+		for(int i=0;i<arr.length;i++) {
+			int x = arr[i];
+			if(x>=97) x-=32;  //소문자인 경우 대문자로 변환
+			ans[x-65]++;      //'A'부터 인덱스 0에 Cnt저장
+		}
+		char answer = '?';
+		int cnt = 0;
+		for(int i=0;i<26;i++) {
+			if(ans[i]>cnt) {      //가장 많은 횟수 존재 시 
+				cnt = ans[i];
+				answer = (char)(i+65);
+			}
+			else if(ans[i]==cnt) {      //같은 횟수 존재 시 
+				answer='?';
+			}
+		}
+		System.out.println(answer);
+		
+	}
+}

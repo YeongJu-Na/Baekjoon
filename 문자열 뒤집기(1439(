@@ -1,0 +1,21 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class testclass {
+    public static void main(String args[])throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String str = br.readLine();
+
+        char prev=str.charAt(0);
+        int cnt = 1;              //1, 0 변화되는 위치 개수 세기--> 10010011-> 1/00/1/00/11 (5)
+        for(int i=1;i<str.length();i++){
+            if(prev!=str.charAt(i)){
+                cnt++;
+                prev=str.charAt(i);
+            }
+        }
+        System.out.println(cnt/2);
+    }
+}

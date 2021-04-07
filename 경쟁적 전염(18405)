@@ -1,0 +1,164 @@
+/////////////////// [풀이 1]-증식된 시간 따로 기록 후 배열을 순차적으로 탐색 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String args[]) throws IOException {
+        int[] dx = {1,0,-1,0};
+        int[] dy = {0,1,0,-1};
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int k = Integer.parseInt(st.nextToken());
+
+        int[][] virus = new int[n][n];    //바이러스 번호
+        int[][] time = new int[n][n];   //바이러스 증식 시간
+
+        for(int i=0;i<n;i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j=0;j<n;j++){
+                virus[i][j]=Integer.parseInt(st.nextToken());
+                if(virus[i][j]==0) time[i][j]=-1;   //아직 증식x이면 -1
+            }
+        }
+
+        st = new StringTokenizer(br.readLine());
+        int s = Integer.parseInt(st.nextToken());
+        int x = Integer.parseInt(st.nextToken());
+        int y = Integer.parseInt(st.nextToken());
+
+        //바이러스 번호, 시간(초) 타입의 배열 - 초마다 bfs
+        for(int sec=0;sec<s;sec++){   // 초
+            //sec+1 초 후
+            for(int i=0;i<n;i++){
+                for(int j=0;j<n;j++){
+                    //이미 증식했거나 바이러스 없는 경우
+                    if(time[i][j]!=sec||virus[i][j]==0) continue;
+                    for(int d=0;d<4;d++){  //상하좌우 - 증식할 위치 찾기
+                        int nx = i+dx[d];
+                        int ny = j+dy[d];
+                        if(nx<0||ny<0||nx>=n||ny>=n) continue;
+                        //증식x--> 이미 바이러스 있고, 그 번호가 지금 증식할 번호보다 크거나 이전에 증식된 것이면
+                        if(virus[nx][ny]!=0 && (virus[nx][ny]<=virus[i][j] || time[nx][ny]!=sec+1)) continue;
+                        virus[nx][ny]=virus[i][j];
+                        time[nx][ny]=sec+1;
+                    }
+                }
+            }
+
+        }
+        System.out.println(virus[x-1][y-1]);
+    }
+}
+///////////간과한 점: 처음 한 번 바이러스 번호순으로 sort하면 이후 저장값들 모두 번호순이라는 것(매번 sort필요x) 
+//////////////[풀이 2]-바이러스 좌표와 번호 담은 리스트 생성, 매 초가 시작될 때마다 사이즈만큼만 리스트에서 빼면서 탐색 
+
+ArrayList<virus> list = new ArrayList<>();
+
+        for(int i=0;i<n;i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j=0;j<n;j++){
+                arr[i][j]=Integer.parseInt(st.nextToken());
+                if(arr[i][j]!=0) list.add(new virus(i,j,arr[i][j]));
+            }
+        }
+
+        st = new StringTokenizer(br.readLine());
+        int s = Integer.parseInt(st.nextToken());
+        int x = Integer.parseInt(st.nextToken());
+        int y = Integer.parseInt(st.nextToken());
+
+        list.sort(new Comparator<virus>() {
+            @Override
+            public int compare(virus o1, virus o2) {
+                return o1.num-o2.num;
+            }
+        });
+
+        for(int sec = 0;sec<s;sec++){
+            int size = list.size();
+            for(int i=0;i<size;i++){
+                virus cur =list.remove(0);
+
+                for(int j=0;j<4;j++){
+                    int nx = cur.x+dx[j];
+                    int ny = cur.y+dy[j];
+                    if(nx<0||ny<0||nx>=n||ny>=n) continue;
+                    if(arr[nx][ny]!=0) continue;
+                    arr[nx][ny]=cur.num;
+                    list.add(new virus(nx,ny,cur.num));
+                }
+            }
+        }
+        System.out.println(arr[x-1][y-1]);
+
+    }
+}
+class virus{
+    int x;
+    int y;
+    int num;
+    virus(int x, int y, int num){
+        this.x=x;
+        this.y=y;
+        this.num=num;
+    }
+}
+///////// 간과한 점: 처음부터 큐로 담을 생각이었으나 정렬이 어려워 시도x했었음, 매 시간마다 큐사이즈만큼 도는 for문없애는 방법 생각x 
+//////// [풀이 3] - 바이러스 좌표,번호,증식시간을 담은 타입의 리스트 생성, 정렬 후 큐돌고, 꺼낸 값의 시간이 sec면 나오기
+
+ArrayList<virus> list = new ArrayList<>();
+
+        for(int i=0;i<n;i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j=0;j<n;j++){
+                arr[i][j]=Integer.parseInt(st.nextToken());
+                if(arr[i][j]!=0) list.add(new virus(i,j,arr[i][j],0));
+            }
+        }
+
+        st = new StringTokenizer(br.readLine());
+        int s = Integer.parseInt(st.nextToken());
+        int x = Integer.parseInt(st.nextToken());
+        int y = Integer.parseInt(st.nextToken());
+
+        list.sort(new Comparator<virus>() {
+            @Override
+            public int compare(virus o1, virus o2) {
+                return o1.num-o2.num;
+            }
+        });
+        Queue<virus> q = new LinkedList<>();
+        for(virus v: list) q.add(v);
+
+        while(!q.isEmpty()){
+            virus cur = q.poll();
+            if(cur.t==s) break;
+            for(int i=0;i<4;i++){
+                int nx = cur.x+dx[i];
+                int ny = cur.y+dy[i];
+                if(nx<0||ny<0||nx>=n||ny>=n||arr[nx][ny]!=0) continue;
+                arr[nx][ny]=cur.num;
+                q.add(new virus(nx,ny,cur.num,cur.t+1));
+            }
+        }
+
+        System.out.println(arr[x-1][y-1]);
+
+    }
+}
+class virus{
+    int x;
+    int y;
+    int num;
+    int t;
+    virus(int x, int y, int num, int t){
+        this.x=x;
+        this.y=y;
+        this.num=num;
+        this.t=t;
+    }
+}

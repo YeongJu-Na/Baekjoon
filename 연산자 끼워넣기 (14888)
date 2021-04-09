@@ -1,0 +1,60 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+public class Main {
+    static int n;
+    static int[] nums;
+    static int min=(int)1e9;
+    static int max=(int)-1e9;
+
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        nums=new int[n]; //long
+        int[] op = new int[4];
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for(int i=0;i<n;i++){
+            nums[i]=Integer.parseInt(st.nextToken());
+        }
+        st=new StringTokenizer(br.readLine());
+        for(int i=0;i<4;i++){
+            op[i]=Integer.parseInt(st.nextToken());
+        }
+        perm(op,1,nums[0]);
+        System.out.println(max);
+        System.out.println(min);
+
+    }
+    static void perm(int[] op, int idx, int val){
+        if(idx==n){
+            
+            if(val<min) min=val;
+            if(val>max) max=val;
+            return;
+        }
+
+        for(int i=0;i<4;i++){
+            if(op[i]==0) continue;
+            op[i]-=1;
+            int temp = val;
+            if(i==0){
+                temp += nums[idx];
+            }
+            else if(i==1){
+                temp -= nums[idx];
+            }
+            else if(i==2){
+                temp *= nums[idx];
+            }
+            else{
+                temp /= nums[idx];
+            }
+            perm(op,idx+1,temp);
+
+            op[i]+=1;
+        }
+
+    }
+}

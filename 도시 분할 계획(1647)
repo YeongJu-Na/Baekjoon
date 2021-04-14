@@ -1,0 +1,71 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+public class testclass {
+    static int[] parent;
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+
+        parent = new int[n+1];
+        Arrays.fill(parent,-1);   //음수: 루트노드, 절댓값: 속한 집합의 수(이 문제에선 큰 의미 없음)
+        Edge[] edges = new Edge[m];
+
+        for(int i=0;i<m;i++){
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            edges[i]=new Edge(a,b,c);
+        }
+        Arrays.sort(edges, new Comparator<Edge>() {   //비용 작은 순서로 정렬
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.c-o2.c;
+            }
+        });
+        int max = 0;
+        int ans = 0;
+        for(Edge e: edges){
+            if(find(e.n1)==find(e.n2)) continue;
+            union(e.n1,e.n2);
+            max=e.c;
+            ans+=e.c;
+        }
+        System.out.println(ans-max);  //최소신장트리 전체 비용 - 내부 간선들 중 최대값
+
+
+    }
+    // 두 집합 합치기
+    static void union(int x, int y){
+        x = find(x);
+        y = find(y);
+        if(x<y){    //숫자가 더 작은 쪽으로 합치기
+            parent[x] += parent[y];
+            parent[y] = x;
+        }
+        else {
+            parent[y] += parent[x];
+            parent[x] = y;
+        }
+    }
+    // 노드x의 루트노드(속한 집합)찾기
+    static int find(int x){
+        if(parent[x]<0) return x;   // 음수이면 루트노드임을 의미
+        return parent[x]=find(parent[x]);
+    }
+}
+class Edge{
+    int n1;
+    int n2;
+    int c;    //간선의 비용
+    Edge(int n1, int n2, int c){
+        this.n1=n1;
+        this.n2 = n2;
+        this.c=c;
+    }
+}

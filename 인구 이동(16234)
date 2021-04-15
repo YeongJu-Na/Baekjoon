@@ -1,0 +1,86 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+public class testclass {
+    static int n, l, r;
+    static int[][] arr;
+    static int[] dx = {1,0,-1,0};
+    static int[] dy = {0,1,0,-1};
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        n = Integer.parseInt(st.nextToken());
+        l = Integer.parseInt(st.nextToken());
+        r = Integer.parseInt(st.nextToken());
+
+        arr = new int[n][n];
+
+        for(int i=0;i<n;i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j=0;j<n;j++){
+                arr[i][j]=Integer.parseInt(st.nextToken());
+            }
+        }
+        int ans = 0;
+        while(true){
+            if(!needUnion()) break; //더 이상 연합필요 없는 경우
+            ans++;
+        }
+        System.out.println(ans);
+
+
+    }
+    //연합 시도 전후 비교--> 같으면 더 이상 연합없음
+    static boolean needUnion(){
+        int[][] temp = arr;     //연합 시도 전의 배열
+        boolean[][] chk= new boolean[n][n];     //상하좌우 조사했는지 체크
+        Queue<Pos> q = new LinkedList<>();      //인접 위치 넣기 위한 큐
+        Queue<Pos> union = new LinkedList<>();  //같은 연합인 나라들 넣을 큐
+        boolean ret = false;    //결과값
+
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                if(chk[i][j]) continue;
+                chk[i][j]=true;
+
+                int hap = 0;    //같은 연합 전체 인구 수
+                q.add(new Pos(i,j));
+                while(!q.isEmpty()){
+                    Pos cur = q.poll();
+                    int val =  arr[cur.x][cur.y];   //현 위치의 인구수
+                    hap += val;
+                    union.add(cur);
+                    for(int k=0;k<4;k++){       //인접국가
+                        int nx = cur.x+dx[k];
+                        int ny = cur.y+dy[k];
+                        if(nx<0||ny<0||nx>=n||ny>=n) continue;  //범위 밖
+                        //이미 방문했거나, 연합할 수 없는 조건인 경우
+                        if(chk[nx][ny]||Math.abs(arr[nx][ny]-val)<l||Math.abs(arr[nx][ny]-val)>r) continue;
+                        chk[nx][ny]=true;
+                        q.add(new Pos(nx,ny));
+                    }
+                }
+                hap /= union.size();        //해당 연합의 평균 인구수
+                while(!union.isEmpty()){
+                    Pos p = union.poll();
+                    //연합 전과 후의 인구 수가 다른 경우
+                    if(arr[p.x][p.y]!=hap) ret = true;
+                    arr[p.x][p.y]=hap;  //인구수 갱신
+                }
+            }
+        }
+        return ret;
+    }
+
+}
+class Pos{
+    int x;
+    int y;
+    Pos(int x, int y){
+        this.x=x;
+        this.y=y;
+    }
+}

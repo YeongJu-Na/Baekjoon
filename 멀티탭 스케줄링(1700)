@@ -1,0 +1,62 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int k = Integer.parseInt(st.nextToken());
+        int[] input = new int[k];
+
+        //i번째 전기용품이 사용되는 인덱스(위치)리스트
+        ArrayList<Integer>[] useIdx = new ArrayList[k+1];
+        for(int i=1;i<k+1;i++) useIdx[i] = new ArrayList<>();
+
+        st = new StringTokenizer(br.readLine());
+        for(int i=0;i<k;i++){
+            input[i] = Integer.parseInt(st.nextToken());    //전기용품 번호
+            useIdx[input[i]].add(i);
+        }
+        int answer = 0;
+        HashSet<Integer> multitab = new HashSet<>();    //멀티
+
+        for(int i=0;i<k;i++) {
+            //멀티탭에 이미 있는 값이면 마지막 문장만 수행
+            //멀티탭에 해당 전기용품 없으면
+            if (!multitab.contains(input[i])) {
+                //멀티탭에 콘센트 남으면
+                if (multitab.size() < n) {
+                    multitab.add(input[i]);
+                }
+                //하나를 선택해 뺴야할 때
+                else {
+                    int max = i;  // 전기용품이 다음으로 사용될 위치, 가장 큰(먼) 전기용품 삭제할 것
+                    int maxval = 0; //삭제할 전기용품 번호
+                    for (int val : multitab) {  //현재 사용 중인 전기용품 중
+                        if (useIdx[val].size() == 0) {  // 다음 사용될 위치 없으면
+                            maxval = val;
+                            break;
+                        } else {    // 다음 사용될 위치 있으면
+                            if (useIdx[val].get(0) > max) {
+                                max = useIdx[val].get(0);
+                                maxval = val;
+                            }
+                        }
+                    }
+                    //max, maxval 빼고 현재 값 넣기
+                    multitab.remove(maxval);
+                    multitab.add(input[i]);
+                    answer++;
+                }
+            }
+            useIdx[input[i]].remove(0);
+        }
+        bw.write(answer+"\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+}

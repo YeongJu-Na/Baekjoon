@@ -1,0 +1,95 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+    static int n;   // 보드 크기
+    public static void main(String args[]) throws IOException {
+
+        int[] dx = {0, 1,0,-1}; //오른쪽, 아래, 왼쪽, 위
+        int[] dy = {1, 0,-1,0};
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        n = Integer.parseInt(br.readLine());
+        int[][] arr = new int[n][n];    //뱀: -1, 사과: 1
+
+        int k = Integer.parseInt(br.readLine());
+        for(int i=0;i<k;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int row = Integer.parseInt(st.nextToken());
+            int col = Integer.parseInt(st.nextToken());
+            arr[row-1][col-1] = 1;  //사
+        }
+        int l = Integer.parseInt(br.readLine());
+        Queue<Dir> dirinfo = new LinkedList<>();    // Dir: <머리방향 바꿀 시간, 바꿀 방향>
+
+        for(int i=0;i<l;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int x = Integer.parseInt(st.nextToken());
+            char c = st.nextToken().charAt(0);
+            dirinfo.add(new Dir(x,c));      //시간순 오름차순으로 주어지므로 정렬 필요x
+        }
+        //뱀이 있는 좌표- peek은 꼬리, getLast는 머리
+        LinkedList<Pos> snake = new LinkedList<>();
+        snake.add(new Pos(0,0));
+        arr[0][0]=-1;   //뱀 위치
+
+        int sec = 0;    //초
+        int dir = 0;    //처음 방향
+
+        while(true){
+            // 방향 전환해야할 때이면
+            if(!dirinfo.isEmpty() && sec==dirinfo.peek().time){ //방향 전환할 때 됐으면
+                if(dirinfo.peek().c=='D'){  //오른쪽 90도
+                    dir++;
+                    if(dir>3) dir=0;
+                }
+                else{   //왼쪽 90도
+                    dir--;
+                    if(dir<0) dir =3;
+                }
+                dirinfo.poll();
+            }
+            //머리 이동할 칸 확인
+            int x = snake.getLast().x;
+            int y = snake.getLast().y;
+            x += dx[dir];
+            y += dy[dir];
+            snake.add(new Pos(x,y));   //머리위치 추가
+
+            sec++;      //초 추가 후 break
+            if(!isRange(x, y)||arr[x][y]==-1) break;
+
+            if(arr[x][y]!=1){       //사과 없으면 꼬리칸 0으로 되돌리고, snake에서 빼기
+                //꼬리- snake.peek(), 가장 오래된 좌표
+                arr[snake.peek().x][snake.peek().y]= 0;
+                snake.poll();
+            }
+            arr[x][y]=-1;   //머리 이동
+        }
+        System.out.println(sec);
+
+    }
+    static boolean isRange(int x, int y){
+        if(x<0||y<0||x>=n||y>=n) return false;
+        return true;
+    }
+
+}
+class Pos{    //좌표값
+    int x;
+    int y;
+    Pos(int x, int y){
+        this.x=x;
+        this.y=y;
+    }
+}
+class Dir{      //방향 전환 정보 
+    int time;   //바꿀 시간
+    char c;     //바꿀 방향
+    Dir(int time, char c){
+        this.time=time;
+        this.c=c;
+    }
+}

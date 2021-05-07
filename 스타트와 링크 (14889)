@@ -1,0 +1,70 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+    static int n,ans = 40000, tot=0;
+    static int[][] arr= new int[20][20];
+    static int[] sums;
+    //7:21
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        //StringTokenizer st = new StringTokenizer(br.readLine());
+
+        n = Integer.parseInt(br.readLine());
+
+        for(int i=0;i<n;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int j=0;j<n;j++){
+                arr[i][j]=Integer.parseInt(st.nextToken());
+                tot+=arr[i][j];
+            }
+        }
+
+        // n개 인덱스 중 n/2개 고르기
+        sums = new int[1<<n];
+        int[] temp = new int[n/2];
+        int start = (int)Math.pow(2,n/2)-1;
+
+        for(int i=start;i<(1<<n);i++){
+            int idx = 0;
+            boolean ishalf=true;
+
+            for(int j=0;j<n;j++){
+                if((i & (1<<j))!= 0){
+                    if(idx==n/2){
+                        ishalf = false;
+                        break;
+                    }
+                    temp[idx++]=j;
+                }
+            }
+            if(ishalf && idx==n/2){
+                sums[i]=sum(temp);
+
+                if(sums[((1<<n)-1-i)]!=0){
+                    int diff = Math.abs(sums[i]-sums[((1<<n)-1-i)]);
+                    if(diff<ans) ans = diff;
+                }
+            }
+        }
+
+        //for(int i=0;i<(1<<n);i++) System.out.println(sums[i]);
+
+        bw.write(ans+"\n");
+        bw.flush();
+        br.close();
+        bw.close();
+
+    }
+    static int sum(int[] temp){
+        int ret = 0;
+        for(int i=0;i<n/2;i++){
+            for(int j=i+1;j<n/2;j++){
+                ret += arr[temp[i]][temp[j]]+arr[temp[j]][temp[i]];
+            }
+        }
+        return ret;
+    }
+}

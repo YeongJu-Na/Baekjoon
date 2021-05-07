@@ -1,0 +1,96 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+
+    static ArrayList<Edge>[] edges;
+    static int n;
+    static int INF = (int)1e9;
+
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int tc = Integer.parseInt(br.readLine());
+
+        while(tc-->0) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            n = Integer.parseInt(st.nextToken());
+            int m = Integer.parseInt(st.nextToken());
+            int t = Integer.parseInt(st.nextToken());
+
+            edges= new ArrayList[2001];
+            for (int i = 1; i < n + 1; i++) edges[i] = new ArrayList<>();
+
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken());
+            int g = Integer.parseInt(st.nextToken());
+            int h = Integer.parseInt(st.nextToken());
+
+            for (int i = 0; i < m; i++) {
+                st = new StringTokenizer(br.readLine());
+                int a = Integer.parseInt(st.nextToken());
+                int b = Integer.parseInt(st.nextToken());
+                int d = Integer.parseInt(st.nextToken());
+
+                edges[a].add(new Edge(b, d));
+                edges[b].add(new Edge(a, d));
+            }
+
+            int gh = dijk(g, h);
+            ArrayList<Integer> answer = new ArrayList<>();
+            //System.out.print(gh+"-->gh ");
+
+            for (int i = 0; i < t; i++) {
+                int dest = Integer.parseInt(br.readLine());
+                int tot = dijk(s, dest);
+                //System.out.print(tot+"-->"+dest);
+                if (tot - gh == dijk(s, g) + dijk(h, dest) || tot - gh == dijk(s, h) + dijk(g, dest)) {
+                    answer.add(dest);
+                }
+            }
+            Collections.sort(answer);
+            for(int tt: answer) bw.write(tt+" ");
+            bw.write("\n");
+        }
+
+        bw.flush();
+        br.close();
+        bw.close();
+
+    }
+    // start에서 다른 노드로 가는 거리 배열 반환
+    static int dijk(int start, int end){
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
+        int[] dist = new int[n+1];
+
+        Arrays.fill(dist,INF);
+        dist[start]=0;
+        pq.add(new Edge(start,0));
+
+        while(!pq.isEmpty()){
+            Edge cur = pq.poll();
+            if(cur.node==end) break;
+            if(dist[cur.node]<cur.cost) continue;
+
+            for(Edge adj: edges[cur.node]){
+                if(adj.cost+cur.cost<dist[adj.node]) {
+                    dist[adj.node]=adj.cost+cur.cost;
+                    pq.add(new Edge(adj.node, cur.cost + adj.cost));
+                }
+            }
+        }
+        return dist[end];
+    }
+}
+class Edge implements Comparable<Edge>{
+    int node;
+    int cost;
+    Edge(int node, int cost){
+        this.node=node;
+        this.cost=cost;
+    }
+    public int compareTo(Edge e){
+        return this.cost-e.cost;
+    }
+}

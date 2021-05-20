@@ -1,0 +1,58 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+    static final int mod = 1000000007;
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        long n = Long.parseLong(br.readLine());
+
+        if(n==0){
+            bw.write(0+"\n");
+            bw.flush();
+            br.close();
+            bw.close();
+            System.exit(0);
+        }
+        long[][] test = {{1,1},{1,0}};
+        long[][] base = {{1,0},{0,0}};
+        long[][] ans = new long[2][2];
+
+        ans = sol(test,n);
+        ans= matrixMultiply(ans,base);
+
+        bw.write(ans[1][0]+"\n");
+        bw.flush();
+        br.close();
+        bw.close();
+
+
+    }
+    static long[][] sol(long[][] matrix, long pow){
+        if(pow==1) return matrix;
+        long[][] temp= sol(matrix,pow/2);
+        temp = matrixMultiply(temp,temp);
+        if(pow%2==0) return temp;
+        else return matrixMultiply(temp,matrix);
+    }
+
+    static long[][] matrixMultiply(long[][] n, long[][] m){
+        int ni = n.length;
+        int nj = n[0].length;
+        int mi = m.length;
+        int mj = m[0].length;
+
+        long[][] ret = new long[ni][mj];
+
+        for(int i=0;i<ni;i++){
+            for(int j=0;j<mj;j++){
+                for(int k=0;k<nj;k++){
+                    ret[i][j] = (ret[i][j]+(n[i][k]*m[k][j])%mod)%mod;
+                }
+            }
+        }
+        return ret;
+    }
+}

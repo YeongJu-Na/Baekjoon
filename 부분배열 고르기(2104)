@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+
+public class testclass {
+    static int n;
+    static long[] arr;
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        n = Integer.parseInt(br.readLine());
+        arr = new long[n];
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for(int i=0;i<n;i++){
+            arr[i]=Long.parseLong(st.nextToken());
+        }
+
+        bw.write(dnc(0,n) + "\n");
+        bw.flush();
+        br.close();
+        bw.close();
+
+    }
+    static long dnc(int s, int e){
+        if(s==e) return -1;
+        if(s+1==e) return arr[s]*arr[s];
+
+        int mid = (s+e)/2;
+        long result = Math.max(dnc(s,mid),dnc(mid,e));
+
+        int l = mid, r = mid;
+        long min = arr[mid];
+        long sum = arr[mid];
+
+        while(r-l+1<e-s){
+            long left = (l>s)?arr[l-1]:-1;
+            long right = (r<e-1)?arr[r+1]:-1;
+
+            if(left>right){
+                sum += left;
+                min = Math.min(min,left);
+                l--;
+            }
+            else{
+                sum+=right;
+                min = Math.min(min,right);
+                r++;
+            }
+            result = Math.max(result,min*sum);
+        }
+        return result;
+    }
+}

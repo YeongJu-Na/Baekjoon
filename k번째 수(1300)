@@ -17,10 +17,13 @@ public class testclass {
         while(left<=right){
             int mid = (left+right)/2;
             int cnt = 0;
+            // mid가 배열에서 들어갈 위치
             for(int i=1;i<=n;i++){
                 cnt += Math.min(n,mid/i);
             }
             if(cnt<k) left = mid+1;
+            // k와 같은 위치이더라도 mid가 행렬에 존재하지 않는 값일 수 있음
+            // 같은 k값을 가지는 값들 중 작은 것이 행렬에 존재하는 것임 --> min%i(나머지)가 0
             else{
                 ans = mid;
                 right = mid-1;

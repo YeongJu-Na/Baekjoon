@@ -1,0 +1,27 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String score = br.readLine();
+        int len = score.length();
+        int cnt = 0;
+        for(int i=0;i<len/2;i++) cnt += score.charAt(i)-'0';
+        for(int i=len/2;i<len;i++) cnt -= score.charAt(i)-'0';
+
+        String ans="";
+        if(cnt==0) ans = "LUCKY";
+        else ans = "READY";
+
+        bw.write(ans+"\n");
+        bw.flush();
+        bw.close();
+        br.close();
+
+    }
+}

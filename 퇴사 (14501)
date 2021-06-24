@@ -1,0 +1,79 @@
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+    public static void main(String args[]) throws IOException {       ////////// 처음 풀이 - dp[0]=현재날짜의 상담선택x일때 최대, dp[1]=선택o
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int n = Integer.parseInt(br.readLine());
+        int[] t = new int[n+1];
+        int[] p = new int[n+1];
+        int[][] dp = new int[2][n+2];
+
+        for(int i=1;i<n+1;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            t[i] = Integer.parseInt(st.nextToken());
+            p[i] = Integer.parseInt(st.nextToken());
+        }
+        int ans = 0;
+        for(int i=n;i>0;i--){
+            int now = 0;
+            int next = i+t[i];
+            if(next<n+2){
+                dp[1][i]=p[i]+Math.max(dp[0][next],dp[1][next]);
+            }
+            for(int j=i+1;j<next;j++){
+                if(j>n+1) break;
+                dp[0][i]=Math.max(dp[0][i],dp[1][j]);
+                //dp[i][0]=Math.max(dp[j][0],dp[j][1]);
+            }
+            ans = Math.max(ans,Math.max(dp[0][i],dp[1][i]));
+        }
+        bw.write(ans+ "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+
+    }
+}
+///////////////////////////////////////////////////////////////////// 두번째 풀이
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int n = Integer.parseInt(br.readLine());
+        int[] t = new int[n+1];
+        int[] p = new int[n+1];
+        int[] dp = new int[n+2];
+
+        for(int i=1;i<n+1;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            t[i] = Integer.parseInt(st.nextToken());
+            p[i] = Integer.parseInt(st.nextToken());
+        }
+        int ans = 0;
+        for(int i=n;i>0;i--){
+            int next = i+t[i];
+            // ans이 dp[next]값이든 아니든 성립가능
+            //헷갈린 부분: 현재는 ans가 더크지만 나중에는 현재 날짜를 선택해야 더 좋을 수 있다?생각함 --> 이미 for문에서 나중 날짜먼저 확인하므로 
+            if(next<n+2) ans = Math.max(ans,p[i]+dp[next]);
+            // 현재날짜의 상담을 할수있든, 없든 성립 가능 --> 현재 날짜 상담 불가면, 이후 날짜들에 영향 없으므로 최대값 가져올 수 있음
+            
+            dp[i]=ans;
+        }
+
+        bw.write(ans+ "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+
+
+    }
+}
